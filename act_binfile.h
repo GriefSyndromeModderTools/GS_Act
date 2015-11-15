@@ -23,7 +23,7 @@ namespace Act
 		{
 		}
 
-	public:
+	private:
 		std::vector<std::uint8_t> ReadBytes(std::size_t count)
 		{
 			std::vector<std::uint8_t> ret(data.begin() + pos, data.begin() + pos + count);
@@ -40,24 +40,34 @@ namespace Act
 			return ret;
 		}
 
+		void ReadAny()
+		{
+			if (block_rest) --block_rest;
+		}
+
+	public:
 		virtual std::int32_t ReadInt32(std::string& name = std::string()) override
 		{
+			ReadAny();
 			return ReadBytes<4>().GetValue<std::int32_t>();
 		}
 
 		virtual std::int16_t ReadInt16(std::string& name = std::string()) override
 		{
+			ReadAny();
 			return ReadBytes<2>().GetValue<std::int16_t>();
 		}
 
 		virtual bool ReadBool(std::string& name = std::string()) override
 		{
+			ReadAny();
 			return ReadBytes<1>().GetValue<bool>();
 		}
 
 		virtual std::string ReadString(std::string& name = std::string()) override
 		{
-			int size = ReadInt32();
+			ReadAny();
+			int size = ReadBytes<4>().GetValue<std::int32_t>();
 			std::vector<std::uint8_t> data = ReadBytes(size);
 			char* raw = (char*) data.data();
 			return std::string(raw, size);
@@ -65,23 +75,40 @@ namespace Act
 
 		virtual float ReadFloat(std::string& name = std::string()) override
 		{
+			ReadAny();
 			return ReadBytes<4>().GetValue<float>();
 		}
 
 		virtual void ReadObject(std::string& name, Act::Reader r) override
 		{
+			ReadAny();
+			auto last_rest = block_rest;
+			block_rest = block_next_size;
+			block_next_size = 0;
 			r();
+			block_rest = last_rest;
 		}
 
 		virtual void ReadArray(std::string& name, Reader r) override
 		{
+			ReadAny();
+			auto last_rest = block_rest;
+			block_rest = block_next_size;
+			block_next_size = 0;
 			r();
+			block_rest = last_rest;
 		}
 
 		virtual bool EndOfBlock() override
 		{
-			Task::SendError("try to get structure on binary file");
-			return false;
+			//Task::SendError("try to get structure on binary file");
+			//return false;
+			return block_rest == 0;
+		}
+
+		virtual void SetBlockSize(std::int32_t size) override
+		{
+			block_next_size = size;
 		}
 
 		virtual bool StrictMode() override
@@ -92,7 +119,8 @@ namespace Act
 	private:
 		std::vector<std::uint8_t> data;
 		std::size_t pos;
-
+		std::int32_t block_rest = 0;
+		std::int32_t block_next_size = 0;
 	};
 
 	struct BinaryInputStream

@@ -105,7 +105,9 @@ namespace Act
 
 		virtual void ReadObject(std::string& name, Reader r) = 0;
 		virtual void ReadArray(std::string& name, Reader r) = 0;
+
 		virtual bool EndOfBlock() = 0;
+		virtual void SetBlockSize(std::int32_t size) = 0;
 
 		virtual bool StrictMode() = 0;
 	};

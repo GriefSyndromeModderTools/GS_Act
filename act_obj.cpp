@@ -35,25 +35,14 @@ namespace
 			{
 				size_layers = s->ReadInt32();
 				Layers.reserve(size_layers);
+				s->SetBlockSize(size_layers);
 			}
 			s->ReadArray(std::string(), [&](){
-				if (s->StrictMode())
+				while (!s->EndOfBlock())
 				{
-					for (int i = 0; i < size_layers; ++i)
-					{
-						s->ReadObject(std::string(), [&](){
-							Layers.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
-				}
-				else
-				{
-					while (!s->EndOfBlock())
-					{
-						s->ReadObject(std::string(), [&](){
-							Layers.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
+					s->ReadObject(std::string(), [&](){
+						Layers.emplace_back(Act::Object::ReadObject(s));
+					});
 				}
 			});
 
@@ -62,25 +51,14 @@ namespace
 			{
 				size_res = s->ReadInt32();
 				Resources.reserve(size_res);
+				s->SetBlockSize(size_res);
 			}
 			s->ReadArray(std::string(), [&](){
-				if (s->StrictMode())
+				while (!s->EndOfBlock())
 				{
-					for (int i = 0; i < size_res; ++i)
-					{
-						s->ReadObject(std::string(), [&](){
-							Resources.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
-				}
-				else
-				{
-					while (!s->EndOfBlock())
-					{
-						s->ReadObject(std::string(), [&](){
-							Resources.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
+					s->ReadObject(std::string(), [&](){
+						Resources.emplace_back(Act::Object::ReadObject(s));
+					});
 				}
 			});
 		}
@@ -150,26 +128,16 @@ namespace
 			{
 				int size_keys = s->ReadInt32();
 				Keys.reserve(size_keys);
-				s->ReadArray(std::string(), [&](){
-					for (int i = 0; i < size_keys; ++i)
-					{
-						s->ReadObject(std::string(), [&](){
-							Keys.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
-				});
+				s->SetBlockSize(size_keys);
 			}
-			else
-			{
-				s->ReadArray(std::string(), [&](){
-					while (!s->EndOfBlock())
-					{
-						s->ReadObject(std::string(), [&](){
-							Keys.emplace_back(Act::Object::ReadObject(s));
-						});
-					}
-				});
-			}
+			s->ReadArray(std::string(), [&](){
+				while (!s->EndOfBlock())
+				{
+					s->ReadObject(std::string(), [&](){
+						Keys.emplace_back(Act::Object::ReadObject(s));
+					});
+				}
+			});
 
 			int size_unknown = s->ReadInt32();
 			if (size_unknown != 0)
@@ -285,6 +253,7 @@ namespace
 				count = s->ReadInt32();
 				size = s->ReadInt32();
 				Data.reserve(count);
+				s->SetBlockSize(count);
 			}
 			else
 			{
@@ -298,27 +267,13 @@ namespace
 			IsShortVer = (size == 24);
 
 			s->ReadArray(std::string(), [&](){
-				if (s->StrictMode())
+				while (!s->EndOfBlock())
 				{
-					for (int i = 0; i < count; ++i)
-					{
-						s->ReadObject(std::string(), [&](){
-							Segment seg(IsShortVer);
-							seg.Read(s);
-							Data.push_back(seg);
-						});
-					}
-				}
-				else
-				{
-					while (!s->EndOfBlock())
-					{
-						s->ReadArray(std::string(), [&](){
-							Segment seg(IsShortVer);
-							seg.Read(s);
-							Data.push_back(seg);
-						});
-					}
+					s->ReadArray(std::string(), [&](){
+						Segment seg(IsShortVer);
+						seg.Read(s);
+						Data.push_back(seg);
+					});
 				}
 			});
 		}

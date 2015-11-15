@@ -276,6 +276,10 @@ namespace Act
 			return false;
 		}
 
+		virtual void SetBlockSize(std::int32_t size) override
+		{
+		}
+
 		virtual bool StrictMode() override
 		{
 			return TextFileOptions::GetStrictMode();
