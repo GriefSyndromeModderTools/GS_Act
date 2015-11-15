@@ -25,7 +25,7 @@ std::unique_ptr<Act::Object> Act::ReadActFromFile(AbstractInputStream s)
 			std::int32_t offset = s->ReadInt32();
 			if (offset != 0)
 			{
-				task.Error("non-zero offset is not supported");
+				s->SkipBytes(offset);
 			}
 		}
 

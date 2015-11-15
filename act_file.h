@@ -109,6 +109,8 @@ namespace Act
 		virtual bool EndOfBlock() = 0;
 		virtual void SetBlockSize(std::int32_t size) = 0;
 
+		virtual void SkipBytes(size_t size) = 0;
+
 		virtual bool StrictMode() = 0;
 	};
 

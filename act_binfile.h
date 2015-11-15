@@ -111,6 +111,11 @@ namespace Act
 			block_next_size = size;
 		}
 
+		virtual void SkipBytes(size_t size) override
+		{
+			pos += size;
+		}
+
 		virtual bool StrictMode() override
 		{
 			return true;

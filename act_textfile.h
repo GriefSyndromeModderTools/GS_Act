@@ -280,6 +280,14 @@ namespace Act
 		{
 		}
 
+		virtual void SkipBytes(size_t size) override
+		{
+			if (size != 0)
+			{
+				Task::SendError("invalid operation: skip bytes in text file");
+			}
+		}
+
 		virtual bool StrictMode() override
 		{
 			return TextFileOptions::GetStrictMode();
