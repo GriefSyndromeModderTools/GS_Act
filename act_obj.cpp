@@ -437,6 +437,78 @@ namespace
 			});
 		}
 	};
+
+	struct C2DLayout : Act::Object
+	{
+		C2DLayout() : Object(GetID()) {}
+
+		static const char* GetID()
+		{
+			return ".?AVC2DLayout@@";
+		}
+
+		virtual void Read(Act::AbstractInputStream s) override
+		{
+			s->ReadObject(std::string(), [&](){
+				Properties.Read(s);
+			});
+		}
+
+		virtual void Write(Act::AbstractOutputStream s) override
+		{
+			s->WriteObject("properties", [&](){
+				Properties.Write(s);
+			});
+		}
+	};
+
+	struct CActResource2D : Act::Object
+	{
+		CActResource2D() : Object(GetID()) {}
+
+		static const char* GetID()
+		{
+			return ".?AVCActResource2D@@";
+		}
+
+		virtual void Read(Act::AbstractInputStream s) override
+		{
+			s->ReadObject(std::string(), [&](){
+				Properties.Read(s);
+			});
+		}
+
+		virtual void Write(Act::AbstractOutputStream s) override
+		{
+			s->WriteObject("properties", [&](){
+				Properties.Write(s);
+			});
+		}
+	};
+
+	struct CActRenderTarget : Act::Object
+	{
+		CActRenderTarget() : Object(GetID()) {}
+
+		static const char* GetID()
+		{
+			return ".?AVCActRenderTarget@@";
+		}
+
+		virtual void Read(Act::AbstractInputStream s) override
+		{
+			s->ReadObject(std::string(), [&](){
+				Properties.Read(s);
+			});
+		}
+
+		virtual void Write(Act::AbstractOutputStream s) override
+		{
+			s->WriteObject("properties", [&](){
+				Properties.Write(s);
+			});
+		}
+	};
 }
 
 namespace
@@ -465,6 +537,9 @@ namespace
 		ret.insert(MakeCreator<ActResourceChip>());
 		ret.insert(MakeCreator<ActTextureResourceInfo>());
 		ret.insert(MakeCreator<MeshResourceInfo>());
+		ret.insert(MakeCreator<C2DLayout>());
+		ret.insert(MakeCreator<CActResource2D>());
+		ret.insert(MakeCreator<CActRenderTarget>());
 
 		return ret;
 	}
